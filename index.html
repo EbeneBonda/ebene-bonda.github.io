@@ -631,18 +631,18 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="space-y-2">
                             <label class="text-xs uppercase tracking-wider text-gray-400 font-semibold">Votre Nom / Structure</label>
-                            <input type="text" required class="w-full bg-ebene-900 border border-white/10 rounded-xl px-5 py-3 focus:outline-none focus:border-gold transition-colors text-white" placeholder="Théâtre, Festival, Elève particulier...">
+                            <input type="text" name="nom" required class="w-full bg-ebene-900 border border-white/10 rounded-xl px-5 py-3 focus:outline-none focus:border-gold transition-colors text-white" placeholder="Théâtre, Festival, Elève particulier...">
                         </div>
                         <div class="space-y-2">
                             <label class="text-xs uppercase tracking-wider text-gray-400 font-semibold">Votre Adresse Email</label>
-                            <input type="email" required class="w-full bg-ebene-900 border border-white/10 rounded-xl px-5 py-3 focus:outline-none focus:border-gold transition-colors text-white" placeholder="nom@exemple.com">
+                            <input type="email" name="email" required class="w-full bg-ebene-900 border border-white/10 rounded-xl px-5 py-3 focus:outline-none focus:border-gold transition-colors text-white" placeholder="nom@exemple.com">
                         </div>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="space-y-2">
                             <label class="text-xs uppercase tracking-wider text-gray-400 font-semibold">Prestation Souhaitée (-10% sur la 1ère)</label>
-                            <select class="w-full bg-ebene-900 border border-white/10 rounded-xl px-5 py-3 focus:outline-none focus:border-gold transition-colors text-white">
+                            <select name="prestation" class="w-full bg-ebene-900 border border-white/10 rounded-xl px-5 py-3 focus:outline-none focus:border-gold transition-colors text-white">
                                 <option value="spectacle">Spectacle Solo / Hosting (150 € net)</option>
                                 <option value="atelier-decouverte">Atelier Solo Découverte (1h15 - 40 €)</option>
                                 <option value="atelier-mise-en-scene">Forfait "Mise en Scène" (5 séances - 175 €)</option>
@@ -653,13 +653,13 @@
                         </div>
                         <div class="space-y-2">
                             <label class="text-xs uppercase tracking-wider text-gray-400 font-semibold">Date Souhaitée / Période</label>
-                            <input type="date" class="w-full bg-ebene-900 border border-white/10 rounded-xl px-5 py-3 focus:outline-none focus:border-gold transition-colors text-white">
+                            <input type="date" name="date" class="w-full bg-ebene-900 border border-white/10 rounded-xl px-5 py-3 focus:outline-none focus:border-gold transition-colors text-white">
                         </div>
                     </div>
 
                     <div class="space-y-2">
                         <label class="text-xs uppercase tracking-wider text-gray-400 font-semibold">Parlez-moi de votre vision ou vos objectifs</label>
-                        <textarea required rows="4" class="w-full bg-ebene-900 border border-white/10 rounded-xl px-5 py-3 focus:outline-none focus:border-gold transition-colors text-white" placeholder="Détaillez vos attentes..."></textarea>
+                        <textarea name="vision" required rows="4" class="w-full bg-ebene-900 border border-white/10 rounded-xl px-5 py-3 focus:outline-none focus:border-gold transition-colors text-white" placeholder="Détaillez vos attentes..."></textarea>
                     </div>
 
                     <div class="text-center">
@@ -798,10 +798,41 @@
             activeTab.classList.add('bg-gold', 'text-black');
         }
 
-        function handleFormSubmit(e) {
-            e.preventDefault();
-            document.getElementById('booking-form').classList.add('hidden');
-            document.getElementById('success-message').classList.remove('hidden');
+        // Gestion du formulaire d'envoi d'e-mails AJAX (Formspree)
+        async function handleFormSubmit(event) {
+            event.preventDefault();
+            const form = document.getElementById('booking-form');
+            const success = document.getElementById('success-message');
+            
+            // Lien Formspree pour static GitHub Pages (AJAX pour garder le style visuel sans recharger)
+            const formspreeUrl = "https://formspree.io/f/xkolbezp"; 
+            
+            if (formspreeUrl.includes("VOTRE_ID_FORMSPREE")) {
+                alert("Félicitations ! Le design du formulaire fonctionne. Pour recevoir réellement les emails, configure ton ID Formspree gratuit en lisant le guide à droite !");
+                form.classList.add('hidden');
+                success.classList.remove('hidden');
+                return;
+            }
+
+            const data = new FormData(form);
+            try {
+                const response = await fetch(formspreeUrl, {
+                    method: 'POST',
+                    body: data,
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+                if (response.ok) {
+                    form.classList.add('hidden');
+                    success.classList.remove('hidden');
+                    form.reset();
+                } else {
+                    alert("Oups ! Une erreur est survenue lors de l'envoi de ta demande.");
+                }
+            } catch (error) {
+                alert("Oups ! Une erreur réseau est survenue. Vérifie ta connexion.");
+            }
         }
 
         function resetForm() {
